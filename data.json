@@ -2,14 +2,14 @@
   "equipment": [
     {
       "id": 1,
-      "name": "asd",
-      "serial_number": "fa",
-      "model": "fg",
-      "doc_type": "Калибровка",
-      "verification_date": "46436-03-12",
-      "valid_until": "7536-05-04",
-      "doc_link": "fghfgh",
-      "additional_info": "ewryrhreh"
+      "name": "tyui",
+      "serial_number": "785785",
+      "model": "tjtgj",
+      "doc_type": "Поверка",
+      "verification_date": "2647-04-06",
+      "valid_until": "4785-05-07",
+      "doc_link": "https://disk.yandex.ru/i/bG-w_frksMOR2A",
+      "additional_info": "sdfsdf"
     }
   ],
   "password": "admin123"
