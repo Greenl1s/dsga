@@ -1,0 +1,16 @@
+{
+  "equipment": [
+    {
+      "id": 1,
+      "name": "asd",
+      "serial_number": "fa",
+      "model": "fg",
+      "doc_type": "Калибровка",
+      "verification_date": "46436-03-12",
+      "valid_until": "7536-05-04",
+      "doc_link": "fghfgh",
+      "additional_info": "ewryrhreh"
+    }
+  ],
+  "password": "admin123"
+}

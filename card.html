@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карточка оборудования</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="card-container" id="cardContainer">
+        <div class="equipment-card">
+            <h1 id="cardTitle">Загрузка...</h1>
+            <div id="cardContent"></div>
+            <button class="btn btn-primary" onclick="window.print()" style="margin-top: 20px;">🖨️ Распечатать</button>
+        </div>
+    </div>
+    
+    <script>
+        // Получить ID из URL
+        function getParameterByName(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        
+        async function loadCard() {
+            const id = getParameterByName('id');
+            if (!id) {
+                document.getElementById('cardTitle').textContent = 'Ошибка';
+                document.getElementById('cardContent').innerHTML = '<p>Не указан ID прибора</p>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('data.json?_=' + Date.now());
+                const data = await response.json();
+                const equipment = data.equipment || [];
+                const item = equipment.find(e => e.id == id);
+                
+                if (!item) {
+                    document.getElementById('cardTitle').textContent = 'Прибор не найден';
+                    document.getElementById('cardContent').innerHTML = '<p>Прибор с таким ID не существует</p>';
+                    return;
+                }
+                
+                const isExpired = item.valid_until && item.valid_until < new Date().toISOString().split('T')[0];
+                const statusText = isExpired ? '❌ ПРОСРОЧЕН' : '✅ ДЕЙСТВИТЕЛЕН';
+                const statusColor = isExpired ? '#e53e3e' : '#48bb78';
+                
+                document.getElementById('cardTitle').textContent = item.name;
+                
+                document.getElementById('cardContent').innerHTML = `
+                    <div class="card-field">
+                        <label>📟 Серийный номер</label>
+                        <div class="value">${escapeHtml(item.serial_number || '—')}</div>
+                    </div>
+                    <div class="card-field">
+                        <label>🏷️ Модель</label>
+                        <div class="value">${escapeHtml(item.model || '—')}</div>
+                    </div>
+                    <div class="card-field">
+                        <label>📄 Тип документа</label>
+                        <div class="value">${escapeHtml(item.doc_type || '—')}</div>
+                    </div>
+                    <div class="card-field">
+                        <label>📅 Дата поверки</label>
+                        <div class="value">${item.verification_date || '—'}</div>
+                    </div>
+                    <div class="card-field">
+                        <label>⏰ Действителен до</label>
+                        <div class="value">${item.valid_until || 'Бессрочно'}</div>
+                    </div>
+                    <div class="card-field">
+                        <label>📎 Статус</label>
+                        <div class="value" style="color: ${statusColor}; font-weight: bold;">${statusText}</div>
+                    </div>
+                    ${item.doc_link ? `
+                    <div class="card-field">
+                        <label>🔗 Ссылка на документ</label>
+                        <div class="value"><a href="${escapeHtml(item.doc_link)}" target="_blank">Открыть документ</a></div>
+                    </div>
+                    ` : ''}
+                    ${item.additional_info ? `
+                    <div class="card-field">
+                        <label>ℹ️ Дополнительная информация</label>
+                        <div class="value">${escapeHtml(item.additional_info)}</div>
+                    </div>
+                    ` : ''}
+                    <div class="card-field">
+                        <label>🆔 ID прибора</label>
+                        <div class="value">${item.id}</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Ошибка:', error);
+                document.getElementById('cardTitle').textContent = 'Ошибка загрузки';
+                document.getElementById('cardContent').innerHTML = '<p>Не удалось загрузить данные</p>';
+            }
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+        
+        loadCard();
+    </script>
+</body>
+</html>
